@@ -107,7 +107,7 @@ public class Main {
             // Acessando a primeira célula da linha - Define as coluna a serem lidas
             Cell cell = row.getCell(2);
 
-            String valor = String.valueOf(cell.getNumericCellValue());
+            Date valor = (cell.getDateCellValue());
 
             listadata.add(valor);
 
@@ -115,7 +115,7 @@ public class Main {
 
         }
 
-        System.out.println(listadata);
+        
 
 
         jdbcTemplate.execute("""
