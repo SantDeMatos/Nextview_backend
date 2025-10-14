@@ -32,6 +32,8 @@ public class Main {
         Filme filmes = new Filme();
         filmes.ExtrairFilmes();
 
+        Serie series = new Serie();
+        series.ExtrairSeries();
 
 
     }

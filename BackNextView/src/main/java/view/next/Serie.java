@@ -16,22 +16,22 @@ import java.util.List;
 
 public class Serie {
 
-    private List<String> tituloConteudo;
-    private List<String> diretorConteudo;
-    private List<String> atoresConteudo;
-    private List<LocalDate> dtLancamentoCont;
-    private List<String> generosConteudo;
-    private List<Double> notaConteudo;
-    private List<String> sinopseCont;
-    private List<Integer> numVotosCont;
+
+    public void ExtrairSeries() throws IOException, InvalidFormatException {
 
 
-    public void ExtrairSerie() throws IOException, InvalidFormatException {
+        BasicDataSource basicDataSource = new BasicDataSource();
+        basicDataSource.setUrl("jdbc:mysql://localhost:3306/nextview");
+        basicDataSource.setUsername("nextview");
+        basicDataSource.setPassword("Sptech#2024");
+
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(basicDataSource);
 
         File arquivo = new File("conteudos.xlsx");
         Workbook workbook = new XSSFWorkbook(arquivo);
 
-        Sheet sheet = workbook.getSheetAt(1);
+
+        Sheet sheet = workbook.getSheetAt(0);
         Integer numlinhas = sheet.getPhysicalNumberOfRows();
 
         for (int i = 1; i < numlinhas; i++) {
@@ -41,72 +41,166 @@ public class Serie {
 
             // Acessando a primeira célula da linha - Define as coluna a serem lidas
 
-            String nome = "";
-            String artista = "";
-            String album = "";
-            LocalDate dataLancamento = null;
+            String titulo = "";
+            String diretor = "";
+            String atores = "";
+            LocalDate dtLancamento= null;
+            String generos = "";
+            String notaResp = "";
+            Double notaConteudo = 0.0;
+            String sinopse = "";
+            Integer numVotos = 0;
 
 
+            for (int j = 0; j < 16; j++) {
+
+
+                Cell cell = row.getCell(j);
+
+
+                if (j == 2) {
+
+                    if(cell != null && cell.getStringCellValue() != null){
+
+                        titulo = cell.getStringCellValue();
+
+                    }else{
+
+                        titulo = "";
+                    }
+
+
+                } else if (j == 3) {
+
+                    if(cell != null && cell.getStringCellValue() != null){
+
+                        diretor = cell.getStringCellValue();
+
+                    }else{
+
+                        diretor = "";
+                    }
+
+
+                } else if (j == 4) {
+
+
+                    if(cell != null && cell.getStringCellValue() != null){
+
+                        atores = cell.getStringCellValue();
+
+                    }else{
+
+                        atores = "";
+                    }
+
+                } else if (j == 6) {
+
+                    if(cell != null && cell.getLocalDateTimeCellValue() != null){
+
+                        dtLancamento = cell.getLocalDateTimeCellValue().toLocalDate();
+
+                    }else{
+
+                        dtLancamento = LocalDate.of(1000,2,10);
+                    }
+
+
+                } else if (j == 8) {
+
+                    if(cell != null){
+
+                        Integer contDigitos = (int) cell.getNumericCellValue();
+
+                        String notaTexto =  contDigitos.toString();
+
+                        Double div = Math.pow(10, notaTexto.length() - 1);
+
+                        notaConteudo = contDigitos / div;
+
+                        notaResp = notaConteudo.toString();
+
+
+                    }else{
+
+                        notaResp = "0";
+                    }
+
+
+                }else if(j == 10){
+
+
+                    if(cell != null && cell.getStringCellValue() != null){
+
+                        generos = cell.getStringCellValue();
+
+
+                    }else{
+
+                        generos = "";
+                    }
+
+
+                }else if(j == 12){
+
+
+                    if(cell != null && cell.getStringCellValue() != null){
+
+                        sinopse = cell.getStringCellValue();
+
+
+                    }else{
+
+                        sinopse = "";
+                    }
+
+                }else if(j == 13){
+
+
+                    if(cell != null){
+
+                        numVotos = (int) cell.getNumericCellValue();
+
+                    }else{
+
+                        numVotos = 0;
+                    }
+
+
+                }
+
+
+
+            }
+
+
+            System.out.println("Realizando a conexão com o banco de dados");
+
+
+
+            sinopse = sinopse.replaceAll("'","");
+            atores = atores.replaceAll("'", "");
+            titulo = titulo.replaceAll("'","");
+            diretor = diretor.replaceAll("'","");
+            atores = atores.substring(0, Math.min(atores.length(), 255));
+            diretor = diretor.substring(0, Math.min(diretor.length(), 255));
+            sinopse = sinopse.substring(0, Math.min(sinopse.length(), 255));
+
+            String comando = """
+               INSERT INTO Conteudo VALUES (DEFAULT,'Tv Show', '%s', '%s', '%s', '%s','%s', %s , '%s', %d);
+                """.formatted(titulo,diretor,atores,dtLancamento.toString(),generos, notaResp,sinopse, numVotos );
+
+
+            System.out.println(comando);
+
+            jdbcTemplate.execute(comando);
 
         }
 
 
         workbook.close();
 
-
-        System.out.println("Realizando a conexão com o banco de dados");
-
-        BasicDataSource basicDataSource = new BasicDataSource();
-        basicDataSource.setUrl("jdbc:mysql://localhost:3306/nextview");
-        basicDataSource.setUsername("nextview");
-        basicDataSource.setPassword("Sptech#2024");
-
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(basicDataSource);
-
-
-
-        jdbcTemplate.execute("""
-    CREATE TABLE filme (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        nome VARCHAR(255) NOT NULL,
-        ano INT NOT NULL,
-        genero VARCHAR(255) NOT NULL,
-        diretor VARCHAR(255) NOT NULL
-    )
-    """);
-
-
     }
 
-    public List<String> getTituloConteudo() {
-        return tituloConteudo;
-    }
 
-    public List<String> getDiretorConteudo() {
-        return diretorConteudo;
-    }
-
-    public List<String> getAtoresConteudo() {
-        return atoresConteudo;
-    }
-
-    public List<LocalDate> getDtLancamentoCont() {
-        return dtLancamentoCont;
-    }
-
-    public List<String> getGenerosConteudo() {
-        return generosConteudo;
-    }
-
-    public List<Double> getNotaConteudo() {
-        return notaConteudo;
-    }
-
-    public List<String> getSinopseCont() {
-        return sinopseCont;
-    }
-
-    public List<Integer> getNumVotosCont() {
-        return numVotosCont;
-    }
 }

@@ -46,6 +46,7 @@ public class Filme {
             String atores = "";
             LocalDate dtLancamento= null;
             String generos = "";
+            String notaResp = "";
              Double notaConteudo = 0.0;
              String sinopse = "";
              Integer numVotos = 0;
@@ -56,17 +57,42 @@ public class Filme {
 
                 Cell cell = row.getCell(j);
 
+
                 if (j == 2) {
 
-                    titulo = cell.getStringCellValue();
+                    if(cell != null && cell.getStringCellValue() != null){
+
+                        titulo = cell.getStringCellValue();
+
+                    }else{
+
+                        titulo = "";
+                    }
+
 
                 } else if (j == 3) {
 
-                    diretor = cell.getStringCellValue();
+                    if(cell != null && cell.getStringCellValue() != null){
+
+                        diretor = cell.getStringCellValue();
+
+                    }else{
+
+                         diretor = "";
+                    }
+
 
                 } else if (j == 4) {
 
-                    atores = cell.getStringCellValue();
+
+                    if(cell != null && cell.getStringCellValue() != null){
+
+                        atores = cell.getStringCellValue();
+
+                    }else{
+
+                        atores = "";
+                    }
 
                 } else if (j == 6) {
 
@@ -84,21 +110,49 @@ public class Filme {
 
                     if(cell != null){
 
-                        notaConteudo = cell.getNumericCellValue();
+                        Integer contDigitos = (int) cell.getNumericCellValue();
+
+                        String notaTexto =  contDigitos.toString();
+
+                        Double div = Math.pow(10, notaTexto.length() - 1);
+
+                        notaConteudo = contDigitos / div;
+
+                        notaResp = notaConteudo.toString();
+
 
                     }else{
 
-                        notaConteudo = 0.0;
+                        notaResp = "0";
                     }
 
 
                 }else if(j == 10){
 
-                    generos = cell.getStringCellValue();
+
+                    if(cell != null && cell.getStringCellValue() != null){
+
+                        generos = cell.getStringCellValue();
+
+
+                    }else{
+
+                         generos = "";
+                    }
+
 
                 }else if(j == 12){
 
-                    sinopse = cell.getStringCellValue();
+
+                    if(cell != null && cell.getStringCellValue() != null){
+
+                        sinopse = cell.getStringCellValue();
+
+
+                    }else{
+
+                        sinopse = "";
+                    }
 
                 }else if(j == 13){
 
@@ -120,8 +174,6 @@ public class Filme {
             }
 
 
-
-
             System.out.println("Realizando a conexão com o banco de dados");
 
 
@@ -135,8 +187,9 @@ public class Filme {
             sinopse = sinopse.substring(0, Math.min(sinopse.length(), 255));
 
             String comando = """
-               INSERT INTO Conteudo VALUES (DEFAULT,'Movie', '%s', '%s', '%s', '%s','%s', %.0f, '%s', %d);
-                """.formatted(titulo,diretor,atores,dtLancamento.toString(),generos, notaConteudo,sinopse, numVotos );
+               INSERT INTO Conteudo VALUES (DEFAULT,'Movie', '%s', '%s', '%s', '%s','%s', %s , '%s', %d);
+                """.formatted(titulo,diretor,atores,dtLancamento.toString(),generos, notaResp,sinopse, numVotos );
+
 
             System.out.println(comando);
 
