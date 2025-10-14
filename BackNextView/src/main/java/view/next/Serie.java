@@ -21,7 +21,7 @@ public class Serie {
     private List<String> atoresConteudo;
     private List<LocalDate> dtLancamentoCont;
     private List<String> generosConteudo;
-    private List<Float> notaConteudo;
+    private List<Double> notaConteudo;
     private List<String> sinopseCont;
     private List<Integer> numVotosCont;
 
@@ -47,43 +47,6 @@ public class Serie {
             LocalDate dataLancamento = null;
 
 
-            for (int j = 0; j < 11; j++) {
-
-
-                Cell cell = row.getCell(j);
-
-                if (j == 0) {
-
-                    id = (int) cell.getNumericCellValue();
-
-                } else if (j == 1) {
-
-                    nome = cell.getStringCellValue();
-
-                } else if (j == 2) {
-
-                    artista = cell.getStringCellValue();
-
-                } else if (j == 5) {
-
-                    album = cell.getStringCellValue();
-                } else if (j == 10) {
-
-                    dataLancamento = LocalDate.from(cell.getLocalDateTimeCellValue());
-                }
-
-
-            }
-
-            Musica musica = new Musica();
-
-            musica.setId(id);
-            musica.setNome(nome);
-            musica.setAlbum(album);
-            musica.setArtista(artista);
-            musica.setDataLancamento(dataLancamento);
-
-            listamusica.add(musica);
 
         }
 
@@ -135,7 +98,7 @@ public class Serie {
         return generosConteudo;
     }
 
-    public List<Float> getNotaConteudo() {
+    public List<Double> getNotaConteudo() {
         return notaConteudo;
     }
 
