@@ -21,9 +21,9 @@ public class Serie {
 
 
         BasicDataSource basicDataSource = new BasicDataSource();
-        basicDataSource.setUrl("jdbc:mysql://localhost:3306/nextview");
-        basicDataSource.setUsername("nextview");
-        basicDataSource.setPassword("Sptech#2024");
+        basicDataSource.setUrl(System.getenv("BD_URL"));
+        basicDataSource.setUsername(System.getenv("BD_USERNAME"));
+        basicDataSource.setPassword(System.getenv("BD_PASSWORD"));
 
         JdbcTemplate jdbcTemplate = new JdbcTemplate(basicDataSource);
 
