@@ -54,6 +54,7 @@ public class Serie {
                 LocalDate dtLancamento = null;
                 String generos = "";
                 String notaResp = "";
+                Double notaConteudo = 0.0;
                 String sinopse = "";
                 Integer numVotos = 0;
 
@@ -61,19 +62,123 @@ public class Serie {
                     for (int j = 0; j < 16; j++) {
                         Cell cell = row.getCell(j);
 
-                        // simplifiqueiii
-                        if (j == 2) titulo = (cell != null) ? cell.getStringCellValue() : "";
-                        else if (j == 3) diretor = (cell != null) ? cell.getStringCellValue() : "";
-                        else if (j == 4) atores = (cell != null) ? cell.getStringCellValue() : "";
-                        else if (j == 6) dtLancamento = (cell != null && DateUtil.isCellDateFormatted(cell))
-                                ? cell.getLocalDateTimeCellValue().toLocalDate()
-                                : LocalDate.of(1000, 2, 10);
-                        else if (j == 8) notaResp = (cell != null)
-                                ? String.format("%.1f", cell.getNumericCellValue())
-                                : "0";
-                        else if (j == 10) generos = (cell != null) ? cell.getStringCellValue() : "";
-                        else if (j == 12) sinopse = (cell != null) ? cell.getStringCellValue() : "";
-                        else if (j == 13) numVotos = (cell != null) ? (int) cell.getNumericCellValue() : 0;
+                        if (j == 2) {
+
+                            titulo = cell.getStringCellValue();
+                            if(cell != null && cell.getStringCellValue() != null){
+
+                                titulo = cell.getStringCellValue();
+
+                            }else{
+
+                                titulo = "";
+                            }
+
+
+                        } else if (j == 3) {
+
+                            diretor = cell.getStringCellValue();
+                            if(cell != null && cell.getStringCellValue() != null){
+
+                                diretor = cell.getStringCellValue();
+
+                            }else{
+
+                                diretor = "";
+                            }
+
+
+                        } else if (j == 4) {
+
+                            atores = cell.getStringCellValue();
+
+                            if(cell != null && cell.getStringCellValue() != null){
+
+                                atores = cell.getStringCellValue();
+
+                            }else{
+
+                                atores = "";
+                            }
+
+                        } else if (j == 6) {
+
+                            if(cell != null && cell.getLocalDateTimeCellValue() != null){
+
+                                dtLancamento = cell.getLocalDateTimeCellValue().toLocalDate();
+
+                            }else{
+
+                                dtLancamento = LocalDate.of(1000,2,10);
+                            }
+
+
+                        } else if (j == 8) {
+
+                            if(cell != null){
+
+                                notaConteudo = cell.getNumericCellValue();
+                                Integer contDigitos = (int) cell.getNumericCellValue();
+
+                                String notaTexto =  contDigitos.toString();
+
+                                Double div = Math.pow(10, notaTexto.length() - 1);
+
+                                notaConteudo = contDigitos / div;
+
+                                notaResp = notaConteudo.toString();
+
+
+                            }else{
+
+                                notaConteudo = 0.0;
+                                notaResp = "0";
+                            }
+
+
+                        }else if(j == 10){
+
+                            generos = cell.getStringCellValue();
+
+                            if(cell != null && cell.getStringCellValue() != null){
+
+                                generos = cell.getStringCellValue();
+
+
+                            }else{
+
+                                generos = "";
+                            }
+
+
+                        }else if(j == 12){
+
+                            sinopse = cell.getStringCellValue();
+
+                            if(cell != null && cell.getStringCellValue() != null){
+
+                                sinopse = cell.getStringCellValue();
+
+
+                            }else{
+
+                                sinopse = "";
+                            }
+
+                        }else if(j == 13){
+
+
+                            if(cell != null){
+
+                                numVotos = (int) cell.getNumericCellValue();
+
+                            }else{
+
+                                numVotos = 0;
+                            }
+
+
+                        }
                     }
 
                     sinopse = (sinopse == null) ? "" : sinopse.replaceAll("'", "");

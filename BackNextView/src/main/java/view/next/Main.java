@@ -3,14 +3,20 @@ package view.next;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-
 import org.springframework.jdbc.core.JdbcTemplate;
+import software.amazon.awssdk.core.sync.ResponseTransformer;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
+import software.amazon.awssdk.services.s3.model.S3Object;
 
 
 public class Main {
@@ -28,12 +34,27 @@ public class Main {
                     """);
 
 
+        S3Client s3Client = new S3Provider().getS3Client();
 
-        Filme filmes = new Filme();
-        filmes.ExtrairFilmes();
+        ListObjectsRequest listObjects = ListObjectsRequest.builder()
+                .bucket("s3-bucket-excel-nextview")
+                .build();
+        List<S3Object> objects = s3Client.listObjects(listObjects).contents();
+
+        for (S3Object object : objects) {
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket("s3-bucket-excel-nextview")
+                    .key(object.key())
+                    .build();
+
+            InputStream objectContent = s3Client.getObject(getObjectRequest, ResponseTransformer.toInputStream());
+            Files.copy(objectContent, new File(object.key()).toPath());
+        }
+
+        Filme filmes = new Filme();filmes.ExtrairFilmes();
 
         Serie series = new Serie();
-        series.ExtrairSeries();
+         series.ExtrairSeries();
 
 
     }
