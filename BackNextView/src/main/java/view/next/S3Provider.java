@@ -1,8 +1,7 @@
 package view.next;
 
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
-
-import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
@@ -11,7 +10,7 @@ public class S3Provider {
     private final AwsCredentialsProvider credentials;
 
     public S3Provider() {
-        this.credentials =  EnvironmentVariableCredentialsProvider.create();
+        this.credentials = ProfileCredentialsProvider.create("default");
     }
 
     public S3Client getS3Client() {
