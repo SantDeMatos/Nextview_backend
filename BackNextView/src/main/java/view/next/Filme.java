@@ -21,7 +21,10 @@ public class Filme {
 
     public void ExtrairFilmes() {
 
+        Log log = new Log();
+
         System.out.println(getDataHora() + "📄Iniciando extração de filmes...");
+        log.registrar("INFO", "📄Iniciando extração de filmes...");
 
         try {
             BasicDataSource basicDataSource = new BasicDataSource();
@@ -31,6 +34,7 @@ public class Filme {
 
             JdbcTemplate jdbcTemplate = new JdbcTemplate(basicDataSource);
             System.out.println(getDataHora() + "🔗Conexão com o banco de dados estabelecida");
+            log.registrar("INFO","🔗Conexão com o banco de dados estabelecida");
 
             File arquivo = new File("conteudos.xlsx");
             Workbook workbook = new XSSFWorkbook(arquivo);
@@ -39,8 +43,8 @@ public class Filme {
             Sheet sheet = workbook.getSheetAt(0);
             Integer numlinhas = sheet.getPhysicalNumberOfRows();
 
-
             System.out.println(getDataHora() + "📄 Planilha carregada com " + numlinhas + " linhas.");
+            log.registrar("INFO", "📄 Planilha carregada com " + numlinhas + " linhas.");
 
             for (int i = 1; i < numlinhas; i++) {
 
@@ -188,21 +192,32 @@ public class Filme {
 
                     jdbcTemplate.execute(comando);
                     System.out.println(getDataHora() + "✅Inserido com sucesso: " + titulo);
+                    log.registrar("INFO", "✅Inserido com sucesso: " + titulo);
 
                 } catch (Exception eLinha) {
-                    System.out.println(getDataHora() + "❌Erro ao processar linha " + i + ": " + eLinha.getMessage());
+                    String mensagem = "❌Erro ao processar linha " + i + ": " + eLinha.getMessage();
+                    System.out.println(getDataHora() + mensagem);
+                    log.registrar("ERRO", mensagem);
                 }
             }
 
             workbook.close();
             System.out.println(getDataHora() + " 🏁 Extração de filmes finalizada com sucesso.");
+            log.registrar("INFO", " 🏁 Extração de filmes finalizada com sucesso.");
 
         } catch (IOException e) {
-            System.out.println(getDataHora() + "❌Erro ao ler o arquivo Excel: " + e.getMessage());
+            String mensagem = "❌Erro ao ler o arquivo Excel: " + e.getMessage();
+            System.out.println(getDataHora() + mensagem);
+            log.registrar("ERRO", mensagem);
         } catch (InvalidFormatException e) {
-            System.out.println(getDataHora() + "❌Formato inválido no arquivo Excel: " + e.getMessage());
+            String mensagem = "❌Formato inválido no arquivo Excel: " + e.getMessage();
+            System.out.println(getDataHora() + mensagem);
+            log.registrar("ERRO", mensagem);
         } catch (Exception e) {
-            System.out.println(getDataHora() + "❌Erro inesperado: " + e.getMessage());
+            String mensagem = "❌Erro inesperado: " + e.getMessage();
+            System.out.println(getDataHora() + mensagem);
+            log.registrar("ERRO", mensagem);
         }
     }
+
 }
