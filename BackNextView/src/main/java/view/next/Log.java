@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import software.amazon.awssdk.services.s3.model.CSVOutput;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 public class Log {
 
@@ -13,9 +14,18 @@ public class Log {
     private String tipoLog;
 
     private String getDataHora(){
-        DateTimeFormatter dataFormatada = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        return "[" + LocalDateTime.now().format(dataFormatada) + "]";
+        DateTimeFormatter dataFormatada = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return LocalDateTime.now().format(dataFormatada);
     }
+
+    private static final BasicDataSource basicDataSource = new BasicDataSource();
+    static {
+        basicDataSource.setUrl(System.getenv("BD_URL"));
+        basicDataSource.setUsername(System.getenv("BD_USERNAME"));
+        basicDataSource.setPassword(System.getenv("BD_PASSWORD"));
+    }
+    private static final JdbcTemplate jdbcTemplate = new JdbcTemplate(basicDataSource);
+
 
     public void setTipoLog(String tipoLog) {
         this.tipoLog = tipoLog;
@@ -29,42 +39,38 @@ public class Log {
         return tipoLog;
     }
 
-    public void ExecutarLog() {
-
-        System.out.println("Histórico e Logs - NextView");
-
-        try {
-            BasicDataSource basicDataSource = new BasicDataSource();
-            basicDataSource.setUrl(System.getenv("BD_URL"));
-            basicDataSource.setUsername(System.getenv("BD_USERNAME"));
-            basicDataSource.setPassword(System.getenv("BD_PASSWORD"));
-            JdbcTemplate jdbcTemplate = new JdbcTemplate(basicDataSource);
-
-            String comando = """
-                    INSERT INTO Log 
-                    VALUES (default, %s, %s, %d, %s);
-                    """.formatted(getDataHora(), mensagem, qtdErro, tipoLog);
-
-            jdbcTemplate.execute(comando);
-
-        } catch(Exception e) {
-            throw new IllegalStateException("Erro ao gerar Log.");
-        }
-
-    }
+    public String getMensagemLog(){return mensagem;}
 
     public void registrar(String tipoLog, String mensagem) {
+
 
         String msgLog = getDataHora() + " - " + tipoLog + ": " + mensagem;
         Integer qtdErro = 0;
 
-        if(tipoLog == "ERRO") {
+        if(Objects.equals(tipoLog, "ERRO")) {
             qtdErro++;
             setQtdErro(qtdErro);
         }
 
         setTipoLog(tipoLog);
         System.out.println(msgLog);
+
+
+        try {
+
+            mensagem = (mensagem == null) ? "" : mensagem.replaceAll("'", "");
+
+            String comando = """
+                    INSERT INTO Log 
+                    VALUES (default, '%s', '%s', %d, '%s');
+                    """.formatted(getDataHora(), mensagem, qtdErro, tipoLog);
+
+            jdbcTemplate.execute(comando);
+
+        } catch(Exception e) {
+            throw new IllegalStateException("Erro ao gerar Log."+ e);
+        }
+
     }
 
 

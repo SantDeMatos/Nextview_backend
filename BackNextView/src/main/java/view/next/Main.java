@@ -61,8 +61,6 @@ public class Main {
         Serie series = new Serie();
          series.ExtrairSeries();
 
-        Log log = new Log();
-        log.ExecutarLog();
 
 
     }
