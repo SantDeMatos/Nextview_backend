@@ -12,15 +12,17 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Serie {
+public class Serie extends Conteudo {
 
-    private String getDataHora() {
+    @Override
+     public String getDataHora() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         return "[" + LocalDateTime.now().format(formatter) + "]";
     }
 
     Log log = new Log();
 
+    @Override
     public void ExtrairSeries() {
 
         System.out.println(getDataHora() + "📄Iniciando extração de séries...");
@@ -28,6 +30,7 @@ public class Serie {
 
         try {
             BasicDataSource basicDataSource = new BasicDataSource();
+
             basicDataSource.setUrl(System.getenv("BD_URL"));
             basicDataSource.setUsername(System.getenv("BD_USERNAME"));
             basicDataSource.setPassword(System.getenv("BD_PASSWORD"));
@@ -228,6 +231,5 @@ public class Serie {
             System.out.println(getDataHora() + mensagem);
             log.registrar("ERRO", mensagem);
         }
-//        log.ExecutarLog();
     }
 }

@@ -19,13 +19,14 @@ public class Log {
     }
 
     private static final BasicDataSource basicDataSource = new BasicDataSource();
+
     static {
         basicDataSource.setUrl(System.getenv("BD_URL"));
         basicDataSource.setUsername(System.getenv("BD_USERNAME"));
         basicDataSource.setPassword(System.getenv("BD_PASSWORD"));
     }
-    private static final JdbcTemplate jdbcTemplate = new JdbcTemplate(basicDataSource);
 
+    private static final JdbcTemplate jdbcTemplate = new JdbcTemplate(basicDataSource);
 
     public void setTipoLog(String tipoLog) {
         this.tipoLog = tipoLog;

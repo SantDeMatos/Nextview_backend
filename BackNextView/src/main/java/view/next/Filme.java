@@ -12,13 +12,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Filme {
+public class Filme extends Conteudo {
 
-    private String getDataHora() {
+    @Override
+    public String getDataHora() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         return "[" + LocalDateTime.now().format(formatter) + "]";
     }
 
+    @Override
     public void ExtrairFilmes() {
 
         Log log = new Log();
