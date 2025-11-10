@@ -14,7 +14,7 @@ public class SlackSend {
         logs log1 = new logs("Crítico","falha malvada",5);
 
         // url do slack nextview(teste)
-        String webhookUrl = "https://hooks.slack.com/services/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";
+//        String webhookUrl = "https://hooks.slack.com/services/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";
         // Recebe o texto para ser enviado ao slack
         String message = "Alerta do tipo " + log1.getTipoLog() + " detectado ás: " + log1.getDataHora();
 
