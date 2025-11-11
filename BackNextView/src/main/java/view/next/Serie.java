@@ -128,7 +128,7 @@ public class Serie extends Conteudo {
                                 atores = "";
                             }
 
-                        } else if (j == 6) {
+                        } else if (j == 7) {
 
                             if(cell != null && cell.getLocalDateTimeCellValue() != null){
 
@@ -192,7 +192,7 @@ public class Serie extends Conteudo {
                                 sinopse = "";
                             }
 
-                        }else if(j == 13){
+                        }else if(j == 14){
 
 
                             if(cell != null){
@@ -203,7 +203,6 @@ public class Serie extends Conteudo {
 
                                 numVotos = 0;
                             }
-
 
                         }
                     }

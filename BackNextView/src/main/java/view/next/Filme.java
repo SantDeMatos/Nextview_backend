@@ -126,7 +126,7 @@ public class Filme extends Conteudo {
                                 atores = "";
                             }
 
-                        } else if (j == 6) {
+                        } else if (j == 7) {
 
                             if(cell != null && cell.getLocalDateTimeCellValue() != null){
 
@@ -184,7 +184,7 @@ public class Filme extends Conteudo {
                                 sinopse = "";
                             }
 
-                        }else if(j == 13){
+                        }else if(j == 14){
                             if(cell != null){
                                 numVotos = (int) cell.getNumericCellValue();
                             }else{
