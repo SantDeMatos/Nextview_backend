@@ -5,7 +5,6 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.jdbc.core.JdbcTemplate;
-
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -14,33 +13,52 @@ import java.time.format.DateTimeFormatter;
 
 public class Filme extends Conteudo {
 
+    private static final BasicDataSource basicDataSource = new BasicDataSource();
+    private static final JdbcTemplate jdbcTemplate = new JdbcTemplate(basicDataSource);
+
     @Override
     public String getDataHora() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         return "[" + LocalDateTime.now().format(formatter) + "]";
     }
 
-    @Override
-    public void ExtrairFilmes() {
+    Log log = new Log();
 
-        Log log = new Log();
+    @Override
+    public void definirCredenciais() {
+        try {
+            basicDataSource.setUrl(System.getenv("BD_URL"));
+            basicDataSource.setUsername(System.getenv("BD_USERNAME"));
+            basicDataSource.setPassword(System.getenv("BD_PASSWORD"));
+
+            System.out.println(getDataHora() + "🔗Conexão com o banco de dados estabelecida.");
+            log.registrar("INFO", "🔗Conexão com o banco de dados estabelecida.");
+
+        } catch (Exception e) {
+            String mensagem = "Erro ao estabelecer a conexão com o banco de dados: " + e.getMessage();
+            System.out.println(getDataHora() + mensagem);
+            log.registrar("ERRO", mensagem);
+        }
+    }
+
+    public void ExtrairFilmes() {
 
         System.out.println(getDataHora() + "📄Iniciando extração de filmes...");
         log.registrar("INFO", "📄Iniciando extração de filmes...");
 
         try {
-            BasicDataSource basicDataSource = new BasicDataSource();
-            basicDataSource.setUrl(System.getenv("BD_URL"));
-            basicDataSource.setUsername(System.getenv("BD_USERNAME"));
-            basicDataSource.setPassword(System.getenv("BD_PASSWORD"));
 
-            JdbcTemplate jdbcTemplate = new JdbcTemplate(basicDataSource);
-            System.out.println(getDataHora() + "🔗Conexão com o banco de dados estabelecida");
-            log.registrar("INFO","🔗Conexão com o banco de dados estabelecida");
+//            BasicDataSource basicDataSource = new BasicDataSource();
+//            basicDataSource.setUrl(System.getenv("BD_URL"));
+//            basicDataSource.setUsername(System.getenv("BD_USERNAME"));
+//            basicDataSource.setPassword(System.getenv("BD_PASSWORD"));
+//            JdbcTemplate jdbcTemplate = new JdbcTemplate(basicDataSource);
+
+//            System.out.println(getDataHora() + "🔗Conexão com o banco de dados estabelecida");
+//            log.registrar("INFO","🔗Conexão com o banco de dados estabelecida");
 
             File arquivo = new File("conteudos.xlsx");
             Workbook workbook = new XSSFWorkbook(arquivo);
-
 
             Sheet sheet = workbook.getSheetAt(0);
             Integer numlinhas = sheet.getPhysicalNumberOfRows();
