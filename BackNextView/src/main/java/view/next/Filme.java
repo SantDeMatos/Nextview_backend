@@ -76,7 +76,7 @@ public class Filme extends Conteudo {
                 String titulo = "";
                 String diretor = "";
                 String atores = "";
-                LocalDate dtLancamento = null;
+                Integer dtLancamento = null;
                 String generos = "";
                 Double notaConteudo = 0.0;
                 String notaResp = "";
@@ -128,14 +128,22 @@ public class Filme extends Conteudo {
 
                         } else if (j == 7) {
 
-                            if(cell != null && cell.getLocalDateTimeCellValue() != null){
 
-                                dtLancamento = cell.getLocalDateTimeCellValue().toLocalDate();
+                            if(cell != null){
+
+                                dtLancamento = (int) cell.getNumericCellValue();
+
+                                if(dtLancamento.toString().length() > 4){
+
+                                    dtLancamento = 0000;
+
+                                }
 
                             }else{
 
-                                dtLancamento = LocalDate.of(1000,2,10);
+                                dtLancamento = 0000;
                             }
+
 
 
                         } else if (j == 8) {
@@ -204,11 +212,13 @@ public class Filme extends Conteudo {
                     atores = atores.substring(0, Math.min(atores.length(), 255));
                     diretor = diretor.substring(0, Math.min(diretor.length(), 255));
                     sinopse = sinopse.substring(0, Math.min(sinopse.length(), 255));
+                    String dataNova = dtLancamento+"-01-01";
+
 
                     String comando = """
                         INSERT INTO Conteudo 
                         VALUES (DEFAULT, 'Movie', '%s', '%s', '%s', '%s', '%s', %s, '%s', %d);
-                    """.formatted(titulo, diretor, atores, dtLancamento.toString(), generos, notaResp, sinopse, numVotos);
+                    """.formatted(titulo, diretor, atores, dataNova, generos, notaResp, sinopse, numVotos);
 
                     jdbcTemplate.execute(comando);
                     System.out.println(getDataHora() + "✅Inserido com sucesso: " + titulo);

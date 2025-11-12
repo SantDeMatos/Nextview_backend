@@ -57,9 +57,11 @@ public class Main {
         }
 
         Filme filmes = new Filme();
+        filmes.definirCredenciais();
         filmes.ExtrairFilmes();
 
         Serie series = new Serie();
+        series.definirCredenciais();
         series.ExtrairSeries();
 
 
