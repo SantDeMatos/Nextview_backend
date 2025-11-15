@@ -25,6 +25,9 @@ public class Main {
 
     public static void main(String[] args) throws IOException, InvalidFormatException {
 
+//        System.out.println(System.getenv("DB_USER"));
+//        System.out.println(System.getenv("DB_PASSWORD"));
+//        System.out.println(System.getenv("DB_URL"));
 
         System.out.println("""
                      _   _                 _    __      __  _                  \s
@@ -52,18 +55,19 @@ public class Main {
             InputStream objectContent = s3Client.getObject(getObjectRequest, ResponseTransformer.toInputStream());
 
                 Files.copy(objectContent, new File(object.key()).toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-
         }
 
-        Filme filmes = new Filme();
-        filmes.definirCredenciais();
-        filmes.ExtrairFilmes();
+//        Filme filmes = new Filme();
+//        filmes.definirCredenciais();
+//        filmes.ExtrairFilmes();
 
         Serie series = new Serie();
         series.definirCredenciais();
         series.ExtrairSeries();
 
+        Filme filmes = new Filme();
+        filmes.definirCredenciais();
+        filmes.ExtrairFilmes();
 
     }
 }

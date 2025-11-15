@@ -2,6 +2,7 @@ package view.next;
 
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.EnvironmentVariableCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
@@ -20,5 +21,5 @@ public class S3Provider {
                 .credentialsProvider(credentials)
                 .build();
     }
-
+//.credentialsProvider(EnvironmentVariableCredentialsProvider.create())
 }

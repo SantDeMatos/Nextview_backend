@@ -74,7 +74,7 @@ public class Serie extends Conteudo {
                 try(Connection conexao = DriverManager.getConnection(bs.getUrl(), bs.getUserName(), bs.getPassword());
                 PreparedStatement insercao = conexao.prepareStatement(sql)) {
 
-                conexao.setAutoCommit(false);
+                conexao.setAutoCommit(false); // Desativando o commit automático dos dados
 
                 Row row = sheet.getRow(i);
 
@@ -112,6 +112,7 @@ public class Serie extends Conteudo {
                             diretor = cell.getStringCellValue();
                             if(cell != null && cell.getStringCellValue() != null){
                                 diretor = cell.getStringCellValue();
+                                diretor = diretor.substring(0, Math.min(diretor.length(), 255));
                             } else {
                                 diretor = (diretor == null) ? "" : diretor.replaceAll("'", "");
                             }
@@ -123,7 +124,9 @@ public class Serie extends Conteudo {
                             atores = cell.getStringCellValue();
                             if(cell != null && cell.getStringCellValue() != null){
                                 atores = cell.getStringCellValue();
+                                atores = atores.substring(0, Math.min(atores.length(), 255));
                             } else {
+//                                atores = "";
                                 atores = (atores == null) ? "" : atores.replaceAll("'", "");
                             }
 
@@ -178,8 +181,10 @@ public class Serie extends Conteudo {
                             sinopse = cell.getStringCellValue();
                             if(cell != null && cell.getStringCellValue() != null){
                                 sinopse = cell.getStringCellValue();
+                                sinopse = sinopse.substring(0, Math.min(sinopse.length(), 255));
                             } else {
                                 sinopse = "";
+                                sinopse = (sinopse == null) ? "" : sinopse.replaceAll("'", "");
                             }
 
                             insercao.setString(7, sinopse);
@@ -193,7 +198,7 @@ public class Serie extends Conteudo {
                                 numVotos = 0;
                             }
 
-                            insercao.setInt(numVotos);
+                            insercao.setInt(8, numVotos);
                             insercao.addBatch();
 
                         }
@@ -201,15 +206,12 @@ public class Serie extends Conteudo {
                         if(i % 2000 == 0) {
                             insercao.executeBatch();
                             conexao.commit();
+                            System.out.println(getDataHora() + " ✅ Inserido com sucesso!");
+                            log.registrar("INFO", " ✅ Inserido com sucesso!");
+//                            System.out.println(getDataHora() + " ✅ Inserido com sucesso: " + titulo);
+//                            log.registrar("INFO", " ✅ Inserido com sucesso: " + titulo);
                         }
                     }
-
-                    sinopse = (sinopse == null) ? "" : sinopse.replaceAll("'", "");
-
-
-                    atores = atores.substring(0, Math.min(atores.length(), 255));
-                    diretor = diretor.substring(0, Math.min(diretor.length(), 255));
-                    sinopse = sinopse.substring(0, Math.min(sinopse.length(), 255));
 //
 //                    String comando = """
 //                        INSERT INTO Conteudo
@@ -217,8 +219,8 @@ public class Serie extends Conteudo {
 //                    """.formatted(titulo, diretor, atores, dtLancamento.toString(), generos, notaResp, sinopse, numVotos);
 
 //                    jdbcTemplate.execute(comando);
-                    System.out.println(getDataHora() + " ✅ Inserido com sucesso: " + titulo);
-                    log.registrar("INFO", " ✅ Inserido com sucesso: " + titulo);
+//                    System.out.println(getDataHora() + " ✅ Inserido com sucesso: " + titulo);
+//                    log.registrar("INFO", " ✅ Inserido com sucesso: " + titulo);
 
                 } catch (Exception eLinha) {
                     String mensagem = " ❌ Erro ao processar linha " + i + ": " + eLinha.getMessage();
