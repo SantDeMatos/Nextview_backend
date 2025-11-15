@@ -59,7 +59,7 @@ public class Serie extends Conteudo {
             // Acessando a primeira linha da planilha - Define qual linha da coluna será lida
             File arquivo = new File("conteudos.xlsx");
             Workbook workbook = new XSSFWorkbook(arquivo);
-            Sheet sheet = workbook.getSheetAt(0);
+            Sheet sheet = workbook.getSheetAt(1);
             int numlinhas = sheet.getPhysicalNumberOfRows();
             System.out.println(getDataHora() + "📄Planilha carregada com " + numlinhas + " linhas.");
             log.registrar("INFO", "📄Planilha carregada com " + numlinhas + " linhas.");
