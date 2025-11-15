@@ -48,15 +48,6 @@ public class Filme extends Conteudo {
 
         try {
 
-//            BasicDataSource basicDataSource = new BasicDataSource();
-//            basicDataSource.setUrl(System.getenv("BD_URL"));
-//            basicDataSource.setUsername(System.getenv("BD_USERNAME"));
-//            basicDataSource.setPassword(System.getenv("BD_PASSWORD"));
-//            JdbcTemplate jdbcTemplate = new JdbcTemplate(basicDataSource);
-
-//            System.out.println(getDataHora() + "🔗Conexão com o banco de dados estabelecida");
-//            log.registrar("INFO","🔗Conexão com o banco de dados estabelecida");
-
             File arquivo = new File("conteudos.xlsx");
             Workbook workbook = new XSSFWorkbook(arquivo);
 

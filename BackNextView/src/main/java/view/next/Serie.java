@@ -7,15 +7,20 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.jdbc.core.JdbcTemplate;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+
+import static java.sql.Date.valueOf;
 
 public class Serie extends Conteudo {
 
-    private static final BasicDataSource basicDataSource = new BasicDataSource();
-    private static final JdbcTemplate jdbcTemplate = new JdbcTemplate(basicDataSource);
+    private static final BasicDataSource bs = new BasicDataSource();
+    private static final JdbcTemplate jdbcTemplate = new JdbcTemplate(bs);
 
     @Override
      public String getDataHora() {
@@ -29,15 +34,15 @@ public class Serie extends Conteudo {
     public void definirCredenciais() {
 
         try {
-            basicDataSource.setUrl(System.getenv("BD_URL"));
-            basicDataSource.setUsername(System.getenv("BD_USERNAME"));
-            basicDataSource.setPassword(System.getenv("BD_PASSWORD"));
+            bs.setUrl(System.getenv("BD_URL"));
+            bs.setUsername(System.getenv("BD_USERNAME"));
+            bs.setPassword(System.getenv("BD_PASSWORD"));
 
             System.out.println(getDataHora() + "🔗Conexão com o banco de dados estabelecida.");
             log.registrar("INFO", "🔗Conexão com o banco de dados estabelecida.");
 
         } catch (Exception e) {
-            String mensagem = "Erro ao estabelecer a conexão com o banco de dados: " + e.getMessage();
+            String mensagem = " ❌ Erro ao estabelecer a conexão com o banco de dados: " + e.getMessage();
             System.out.println(getDataHora() + mensagem);
             log.registrar("ERRO", mensagem);
         }
@@ -50,15 +55,8 @@ public class Serie extends Conteudo {
         log.registrar("INFO", "📄Iniciando extração de séries...");
 
         try {
-//            BasicDataSource basicDataSource = new BasicDataSource();
-//            basicDataSource.setUrl(System.getenv("BD_URL"));
-//            basicDataSource.setUsername(System.getenv("BD_USERNAME"));
-//            basicDataSource.setPassword(System.getenv("BD_PASSWORD"));
-//            JdbcTemplate jdbcTemplate = new JdbcTemplate(basicDataSource);
 
-//            System.out.println(getDataHora() + "🔗Conexão com o banco de dados estabelecida.");
-//            log.registrar("INFO", "🔗Conexão com o banco de dados estabelecida.");
-
+            // Acessando a primeira linha da planilha - Define qual linha da coluna será lida
             File arquivo = new File("conteudos.xlsx");
             Workbook workbook = new XSSFWorkbook(arquivo);
             Sheet sheet = workbook.getSheetAt(0);
@@ -68,18 +66,26 @@ public class Serie extends Conteudo {
 
             for (int i = 1; i < numlinhas; i++) {
 
-                // Acessando a primeira linha da planilha - Define qual linha da coluna será lida
+                String sql = """
+//                        INSERT INTO Conteudo
+                            VALUES (DEFAULT, 'Tv Show', ?, ?, ?, ?, ?, ?, ?, ?);
+//                    """;
+
+                try(Connection conexao = DriverManager.getConnection(bs.getUrl(), bs.getUserName(), bs.getPassword());
+                PreparedStatement insercao = conexao.prepareStatement(sql)) {
+
+                conexao.setAutoCommit(false);
 
                 Row row = sheet.getRow(i);
-                // Acessando a primeira célula da linha - Define as coluna a serem lidas
 
+                // Acessando a primeira célula da linha - Define as coluna a serem lidas
                 if (row == null) continue;
 
 
                 String titulo = "";
                 String diretor = "";
                 String atores = "";
-                Integer dtLancamento = null;
+                LocalDate dtLancamento = null;
                 String generos = "";
                 String notaResp = "";
                 Double notaConteudo = 0.0;
@@ -88,67 +94,54 @@ public class Serie extends Conteudo {
 
                 try {
                     for (int j = 0; j < 16; j++) {
+
                         Cell cell = row.getCell(j);
 
                         if (j == 2) {
-
                             titulo = cell.getStringCellValue();
                             if(cell != null && cell.getStringCellValue() != null){
-
                                 titulo = cell.getStringCellValue();
-
-                            }else{
-
-                                titulo = "";
+                            } else {
+                                titulo = (titulo == null) ? "" : titulo.replaceAll("'", "");
                             }
 
+                            insercao.setString(1, titulo);
+                            insercao.addBatch();
 
                         } else if (j == 3) {
-
                             diretor = cell.getStringCellValue();
                             if(cell != null && cell.getStringCellValue() != null){
-
                                 diretor = cell.getStringCellValue();
-
-                            }else{
-
-                                diretor = "";
+                            } else {
+                                diretor = (diretor == null) ? "" : diretor.replaceAll("'", "");
                             }
 
+                            insercao.setString(2, diretor);
+                            insercao.addBatch();
 
                         } else if (j == 4) {
-
                             atores = cell.getStringCellValue();
-
                             if(cell != null && cell.getStringCellValue() != null){
-
                                 atores = cell.getStringCellValue();
-
-                            }else{
-
-                                atores = "";
+                            } else {
+                                atores = (atores == null) ? "" : atores.replaceAll("'", "");
                             }
+
+                            insercao.setString(3, atores);
+                            insercao.addBatch();
 
                         } else if (j == 7) {
 
-                            if(cell != null){
-
-                                dtLancamento = (int) cell.getNumericCellValue();
-
-                                if(dtLancamento.toString().length() > 4){
-
-                                    dtLancamento = 0000;
-
-                                }
-
-                            }else{
-
-                                dtLancamento = 0000;
+                            if(cell != null && cell.getLocalDateTimeCellValue() != null){
+                                dtLancamento = cell.getLocalDateTimeCellValue().toLocalDate();
+                            } else {
+                                dtLancamento = LocalDate.of(1000,2,10);
                             }
 
+                            insercao.setDate(4, Date.valueOf(dtLancamento));
+                            insercao.addBatch();
 
                         } else if (j == 8) {
-
                             if(cell != null){
 
                                 notaConteudo = cell.getNumericCellValue();
@@ -162,73 +155,68 @@ public class Serie extends Conteudo {
 
                                 notaResp = notaConteudo.toString();
 
-
                             }else{
-
                                 notaConteudo = 0.0;
                                 notaResp = "0";
                             }
 
+                            insercao.setString(6, notaResp);
+                            insercao.addBatch();
 
-                        }else if(j == 10){
-
+                        } else if(j == 10){
                             generos = cell.getStringCellValue();
-
                             if(cell != null && cell.getStringCellValue() != null){
-
                                 generos = cell.getStringCellValue();
-
-
-                            }else{
-
+                            } else {
                                 generos = "";
                             }
 
+                            insercao.setString(5, generos);
+                            insercao.addBatch();
 
                         }else if(j == 12){
-
                             sinopse = cell.getStringCellValue();
-
                             if(cell != null && cell.getStringCellValue() != null){
-
                                 sinopse = cell.getStringCellValue();
-
-
-                            }else{
-
+                            } else {
                                 sinopse = "";
                             }
 
+                            insercao.setString(7, sinopse);
+                            insercao.addBatch();
+
                         }else if(j == 14){
 
-
                             if(cell != null){
-
                                 numVotos = (int) cell.getNumericCellValue();
-
-                            }else{
-
+                            } else {
                                 numVotos = 0;
                             }
 
+                            insercao.setInt(numVotos);
+                            insercao.addBatch();
+
+                        }
+
+                        if(i % 2000 == 0) {
+                            insercao.executeBatch();
+                            conexao.commit();
                         }
                     }
 
                     sinopse = (sinopse == null) ? "" : sinopse.replaceAll("'", "");
-                    atores = (atores == null) ? "" : atores.replaceAll("'", "");
-                    titulo = (titulo == null) ? "" : titulo.replaceAll("'", "");
-                    diretor = (diretor == null) ? "" : diretor.replaceAll("'", "");
+
 
                     atores = atores.substring(0, Math.min(atores.length(), 255));
                     diretor = diretor.substring(0, Math.min(diretor.length(), 255));
                     sinopse = sinopse.substring(0, Math.min(sinopse.length(), 255));
-                    String dataNova = dtLancamento+"-01-01";
-                 String comando = """
-                        INSERT INTO Conteudo 
-                        VALUES (DEFAULT, 'Tv Show', '%s', '%s', '%s', '%s', '%s', %s, '%s', %d);
-                    """.formatted(titulo, diretor, atores, dataNova, generos, notaResp, sinopse, numVotos);
+//
+//                    String comando = """
+//                        INSERT INTO Conteudo
+//                        VALUES (DEFAULT, 'Tv Show', '%s', '%s', '%s', '%s', '%s', %s, '%s', %d);
+//                    """.formatted(titulo, diretor, atores, dtLancamento.toString(), generos, notaResp, sinopse, numVotos);
 
-                    jdbcTemplate.execute(comando);
+//                    jdbcTemplate.execute(comando);
                     System.out.println(getDataHora() + " ✅ Inserido com sucesso: " + titulo);
                     log.registrar("INFO", " ✅ Inserido com sucesso: " + titulo);
 
@@ -236,6 +224,8 @@ public class Serie extends Conteudo {
                     String mensagem = " ❌ Erro ao processar linha " + i + ": " + eLinha.getMessage();
                     System.out.println(getDataHora() + mensagem);
                     log.registrar("ERRO", mensagem);
+
+                    }
                 }
             }
 
