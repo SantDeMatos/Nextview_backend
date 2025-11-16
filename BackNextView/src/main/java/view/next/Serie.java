@@ -14,40 +14,57 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+//import com.mysql.cj.jdbc.Driver;
 
 import static java.sql.Date.valueOf;
 
 public class Serie extends Conteudo {
 
-    private static final BasicDataSource bs = new BasicDataSource();
-    private static final JdbcTemplate jdbcTemplate = new JdbcTemplate(bs);
-
     @Override
-     public String getDataHora() {
+    public String getDataHora() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         return "[" + LocalDateTime.now().format(formatter) + "]";
     }
 
-    Log log = new Log();
+    public static Log log = new Log();
 
-    @Override
-    public void definirCredenciais() {
+    private static final BasicDataSource bs = new BasicDataSource();
+    private static JdbcTemplate jdbcTemplate;
 
-        try {
-            bs.setUrl(System.getenv("BD_URL"));
-            bs.setUsername(System.getenv("BD_USERNAME"));
-            bs.setPassword(System.getenv("BD_PASSWORD"));
-
-            System.out.println(getDataHora() + "🔗Conexão com o banco de dados estabelecida.");
-            log.registrar("INFO", "🔗Conexão com o banco de dados estabelecida.");
-
-        } catch (Exception e) {
-            String mensagem = " ❌ Erro ao estabelecer a conexão com o banco de dados: " + e.getMessage();
-            System.out.println(getDataHora() + mensagem);
-            log.registrar("ERRO", mensagem);
-        }
-
+    static {
+            bs.setDriverClassName("com.mysql.cj.jdbc.Driver");
+            bs.setUrl(System.getenv("DB_URL"));
+            bs.setUsername(System.getenv("DB_USERNAME"));
+            bs.setPassword(System.getenv("DB_PASSWORD"));
+//            log.registrar("INFO", "🔗Conexão com o banco de dados estabelecida.");
+            jdbcTemplate = new JdbcTemplate(bs);
     }
+
+
+
+
+
+//    @Override
+//    public void definirCredenciais() {
+//
+//        try {
+//            bs.setDriverClassName("com.mysql.cj.jdbc.Driver");
+//            bs.setUrl(System.getenv("DB_URL"));
+//            bs.setUsername(System.getenv("DB_USERNAME"));
+//            bs.setPassword(System.getenv("DB_PASSWORD"));
+//
+//            System.out.println(getDataHora() + "🔗Conexão com o banco de dados estabelecida.");
+//            log.registrar("INFO", "🔗Conexão com o banco de dados estabelecida.");
+//
+//        } catch (Exception e) {
+//            String mensagem = " ❌ Erro ao estabelecer a conexão com o banco de dados: " + e.getMessage();
+//            System.out.println(getDataHora() + mensagem);
+//            log.registrar("ERRO", mensagem);
+//        }
+//
+//    }
+
+//    private static final JdbcTemplate jdbcTemplate = new JdbcTemplate(bs);
 
     public void ExtrairSeries() {
 
@@ -55,7 +72,6 @@ public class Serie extends Conteudo {
         log.registrar("INFO", "📄Iniciando extração de séries...");
 
         try {
-
             // Acessando a primeira linha da planilha - Define qual linha da coluna será lida
             File arquivo = new File("conteudos.xlsx");
             Workbook workbook = new XSSFWorkbook(arquivo);
@@ -66,12 +82,9 @@ public class Serie extends Conteudo {
 
             for (int i = 1; i < numlinhas; i++) {
 
-                String sql = """
-//                        INSERT INTO Conteudo
-                            VALUES (DEFAULT, 'Tv Show', ?, ?, ?, ?, ?, ?, ?, ?);
-//                    """;
+                String sql = " INSERT INTO conteudo VALUES (DEFAULT, 'Tv Show', ?, ?, ?, ?, ?, ?, ?, ?); ";
 
-                try(Connection conexao = DriverManager.getConnection(bs.getUrl(), bs.getUserName(), bs.getPassword());
+                try(Connection conexao = bs.getConnection();
                 PreparedStatement insercao = conexao.prepareStatement(sql)) {
 
                 conexao.setAutoCommit(false); // Desativando o commit automático dos dados
@@ -106,7 +119,7 @@ public class Serie extends Conteudo {
                             }
 
                             insercao.setString(1, titulo);
-                            insercao.addBatch();
+//                            insercao.addBatch();
 
                         } else if (j == 3) {
                             diretor = cell.getStringCellValue();
@@ -118,7 +131,7 @@ public class Serie extends Conteudo {
                             }
 
                             insercao.setString(2, diretor);
-                            insercao.addBatch();
+//                            insercao.addBatch();
 
                         } else if (j == 4) {
                             atores = cell.getStringCellValue();
@@ -131,7 +144,7 @@ public class Serie extends Conteudo {
                             }
 
                             insercao.setString(3, atores);
-                            insercao.addBatch();
+//                            insercao.addBatch();
 
                         } else if (j == 7) {
 
@@ -142,7 +155,7 @@ public class Serie extends Conteudo {
                             }
 
                             insercao.setDate(4, Date.valueOf(dtLancamento));
-                            insercao.addBatch();
+//                            insercao.addBatch();
 
                         } else if (j == 8) {
                             if(cell != null){
@@ -158,13 +171,13 @@ public class Serie extends Conteudo {
 
                                 notaResp = notaConteudo.toString();
 
-                            }else{
+                            } else {
                                 notaConteudo = 0.0;
                                 notaResp = "0";
                             }
 
                             insercao.setString(6, notaResp);
-                            insercao.addBatch();
+//                            insercao.addBatch();
 
                         } else if(j == 10){
                             generos = cell.getStringCellValue();
@@ -175,9 +188,9 @@ public class Serie extends Conteudo {
                             }
 
                             insercao.setString(5, generos);
-                            insercao.addBatch();
+//                            insercao.addBatch();
 
-                        }else if(j == 12){
+                        }else if(j == 11){
                             sinopse = cell.getStringCellValue();
                             if(cell != null && cell.getStringCellValue() != null){
                                 sinopse = cell.getStringCellValue();
@@ -188,9 +201,9 @@ public class Serie extends Conteudo {
                             }
 
                             insercao.setString(7, sinopse);
-                            insercao.addBatch();
+//                            insercao.addBatch();
 
-                        }else if(j == 14){
+                        }else if(j == 13){
 
                             if(cell != null){
                                 numVotos = (int) cell.getNumericCellValue();
@@ -226,7 +239,7 @@ public class Serie extends Conteudo {
                     String mensagem = " ❌ Erro ao processar linha " + i + ": " + eLinha.getMessage();
                     System.out.println(getDataHora() + mensagem);
                     log.registrar("ERRO", mensagem);
-
+                    eLinha.printStackTrace();
                     }
                 }
             }

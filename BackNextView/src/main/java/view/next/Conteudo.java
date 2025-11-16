@@ -10,6 +10,6 @@ public abstract class Conteudo {
 
     public abstract String getDataHora();
 
-    public abstract void definirCredenciais();;
+//    public abstract void definirCredenciais();;
 
 }

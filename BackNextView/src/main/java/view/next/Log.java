@@ -19,14 +19,15 @@ public class Log {
     }
 
     private static final BasicDataSource basicDataSource = new BasicDataSource();
+    private static JdbcTemplate jdbcTemplate;
 
     static {
-        basicDataSource.setUrl(System.getenv("BD_URL"));
-        basicDataSource.setUsername(System.getenv("BD_USERNAME"));
-        basicDataSource.setPassword(System.getenv("BD_PASSWORD"));
+        basicDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        basicDataSource.setUrl(System.getenv("DB_URL"));
+        basicDataSource.setUsername(System.getenv("DB_USERNAME"));
+        basicDataSource.setPassword(System.getenv("DB_PASSWORD"));
+        jdbcTemplate = new JdbcTemplate(basicDataSource);
     }
-
-    private static final JdbcTemplate jdbcTemplate = new JdbcTemplate(basicDataSource);
 
     public void setTipoLog(String tipoLog) {
         this.tipoLog = tipoLog;
@@ -60,6 +61,7 @@ public class Log {
         try {
 
             mensagem = (mensagem == null) ? "" : mensagem.replaceAll("'", "");
+            mensagem = mensagem.substring(0, Math.min(mensagem.length(), 255));
 
             String comando = """
                     INSERT INTO Log 
@@ -69,6 +71,7 @@ public class Log {
             jdbcTemplate.execute(comando);
 
         } catch(Exception e) {
+            e.printStackTrace();
             throw new IllegalStateException("Erro ao gerar Log."+ e);
         }
 

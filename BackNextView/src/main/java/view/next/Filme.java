@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import com.mysql.cj.jdbc.Driver;
 
 public class Filme extends Conteudo {
 
@@ -24,22 +25,23 @@ public class Filme extends Conteudo {
 
     Log log = new Log();
 
-    @Override
-    public void definirCredenciais() {
-        try {
-            basicDataSource.setUrl(System.getenv("BD_URL"));
-            basicDataSource.setUsername(System.getenv("BD_USERNAME"));
-            basicDataSource.setPassword(System.getenv("BD_PASSWORD"));
-
-            System.out.println(getDataHora() + "🔗Conexão com o banco de dados estabelecida.");
-            log.registrar("INFO", "🔗Conexão com o banco de dados estabelecida.");
-
-        } catch (Exception e) {
-            String mensagem = "Erro ao estabelecer a conexão com o banco de dados: " + e.getMessage();
-            System.out.println(getDataHora() + mensagem);
-            log.registrar("ERRO", mensagem);
-        }
-    }
+//    @Override
+//    public void definirCredenciais() {
+//        try {
+//            basicDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+//            basicDataSource.setUrl(System.getenv("BD_URL"));
+//            basicDataSource.setUsername(System.getenv("BD_USERNAME"));
+//            basicDataSource.setPassword(System.getenv("BD_PASSWORD"));
+//
+//            System.out.println(getDataHora() + "🔗Conexão com o banco de dados estabelecida.");
+//            log.registrar("INFO", "🔗Conexão com o banco de dados estabelecida.");
+//
+//        } catch (Exception e) {
+//            String mensagem = "Erro ao estabelecer a conexão com o banco de dados: " + e.getMessage();
+//            System.out.println(getDataHora() + mensagem);
+//            log.registrar("ERRO", mensagem);
+//        }
+//    }
 
     public void ExtrairFilmes() {
 

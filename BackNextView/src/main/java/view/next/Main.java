@@ -10,7 +10,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,6 +20,7 @@ import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
 
+
 public class Main {
 
     public static void main(String[] args) throws IOException, InvalidFormatException {
@@ -28,6 +28,9 @@ public class Main {
 //        System.out.println(System.getenv("DB_USER"));
 //        System.out.println(System.getenv("DB_PASSWORD"));
 //        System.out.println(System.getenv("DB_URL"));
+
+//        System.out.println("KEY ID: " + System.getenv("AWS_ACCESS_KEY_ID"));
+//        System.out.println("SECRET: " + System.getenv("AWS_SECRET_ACCESS_KEY"));
 
         System.out.println("""
                      _   _                 _    __      __  _                  \s
@@ -62,11 +65,11 @@ public class Main {
 //        filmes.ExtrairFilmes();
 
         Serie series = new Serie();
-        series.definirCredenciais();
+//        series.definirCredenciais();
         series.ExtrairSeries();
 
         Filme filmes = new Filme();
-        filmes.definirCredenciais();
+//        filmes.definirCredenciais();
         filmes.ExtrairFilmes();
 
     }
