@@ -21,5 +21,4 @@ public class S3Provider {
                 .credentialsProvider(credentials)
                 .build();
     }
-//.credentialsProvider(EnvironmentVariableCredentialsProvider.create())
 }

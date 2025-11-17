@@ -55,7 +55,7 @@ public class Log {
         }
 
         setTipoLog(tipoLog);
-        System.out.println(msgLog);
+//        System.out.println(msgLog);
 
 
         try {
