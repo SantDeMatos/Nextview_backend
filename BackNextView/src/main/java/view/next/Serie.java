@@ -5,211 +5,252 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.jdbc.core.JdbcTemplate;
-
 import java.io.File;
 import java.io.IOException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import com.mysql.cj.jdbc.Driver;
+import static java.sql.Date.valueOf;
 
-public class Serie {
+public class Serie extends Conteudo {
 
-    private String getDataHora() {
+    @Override
+    public String getDataHora() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         return "[" + LocalDateTime.now().format(formatter) + "]";
     }
 
-    Log log = new Log();
+    public static Log log = new Log();
+
+    private static final BasicDataSource bs = new BasicDataSource();
+    private static JdbcTemplate jdbcTemplate;
+
+    static {
+            bs.setDriverClassName("com.mysql.cj.jdbc.Driver");
+            bs.setUrl(System.getenv("DB_URL"));
+            bs.setUsername(System.getenv("DB_USERNAME"));
+            bs.setPassword(System.getenv("DB_PASSWORD"));
+            jdbcTemplate = new JdbcTemplate(bs);
+    }
 
     public void ExtrairSeries() {
 
         System.out.println(getDataHora() + "📄Iniciando extração de séries...");
         log.registrar("INFO", "📄Iniciando extração de séries...");
 
-        try {
-            BasicDataSource basicDataSource = new BasicDataSource();
-            basicDataSource.setUrl(System.getenv("BD_URL"));
-            basicDataSource.setUsername(System.getenv("BD_USERNAME"));
-            basicDataSource.setPassword(System.getenv("BD_PASSWORD"));
+        String sql = " INSERT INTO Conteudo VALUES (DEFAULT, 'Tv Show', ?, ?, ?, ?, ?, ?, ?, ?); ";
 
-            JdbcTemplate jdbcTemplate = new JdbcTemplate(basicDataSource);
-            System.out.println(getDataHora() + "🔗Conexão com o banco de dados estabelecida.");
-            log.registrar("INFO", "🔗Conexão com o banco de dados estabelecida.");
+        try(Connection conexao = bs.getConnection();
+            PreparedStatement insercao = conexao.prepareStatement(sql)) {
 
+            conexao.setAutoCommit(false); // Desativando o commit automático dos dados
+
+            // Acessando a primeira linha da planilha - Define qual linha da coluna será lida
             File arquivo = new File("conteudos.xlsx");
             Workbook workbook = new XSSFWorkbook(arquivo);
-            Sheet sheet = workbook.getSheetAt(0);
+            Sheet sheet = workbook.getSheetAt(1);
             int numlinhas = sheet.getPhysicalNumberOfRows();
             System.out.println(getDataHora() + "📄Planilha carregada com " + numlinhas + " linhas.");
             log.registrar("INFO", "📄Planilha carregada com " + numlinhas + " linhas.");
+            Integer contador = 1;
 
-            for (int i = 1; i < numlinhas; i++) {
+            for (int i = 1; i <= numlinhas; i++) {
 
-                // Acessando a primeira linha da planilha - Define qual linha da coluna será lida
+                    Row row = sheet.getRow(i);
 
-                Row row = sheet.getRow(i);
-                // Acessando a primeira célula da linha - Define as coluna a serem lidas
+                    // Acessando a primeira célula da linha - Define as coluna a serem lidas
+                    if (row == null) continue;
 
-                if (row == null) continue;
+                    String titulo = "";
+                    String diretor = "";
+                    String atores = "";
+                    LocalDate dtLancamento = null;
+                    String generos = "";
+                    String notaResp = "";
+                    Double notaConteudo = 0.0;
+                    String sinopse = "";
+                    Integer numVotos = 0;
 
+                    try {
+                        for (int j = 0; j < 16; j++) {
 
-                String titulo = "";
-                String diretor = "";
-                String atores = "";
-                LocalDate dtLancamento = null;
-                String generos = "";
-                String notaResp = "";
-                Double notaConteudo = 0.0;
-                String sinopse = "";
-                Integer numVotos = 0;
+                            Cell cell = row.getCell(j);
 
-                try {
-                    for (int j = 0; j < 16; j++) {
-                        Cell cell = row.getCell(j);
-
-                        if (j == 2) {
-
-                            titulo = cell.getStringCellValue();
-                            if(cell != null && cell.getStringCellValue() != null){
-
+                            if (j == 2) {
                                 titulo = cell.getStringCellValue();
+                                if (cell != null && cell.getStringCellValue() != null) {
+                                    titulo = cell.getStringCellValue();
+                                } else {
+                                    titulo = (titulo == null) ? "" : titulo.replaceAll("'", "");
+                                }
 
-                            }else{
+                                insercao.setString(1, titulo);
 
-                                titulo = "";
-                            }
-
-
-                        } else if (j == 3) {
-
-                            diretor = cell.getStringCellValue();
-                            if(cell != null && cell.getStringCellValue() != null){
-
+                            } else if (j == 3) {
                                 diretor = cell.getStringCellValue();
+                                if (cell != null && cell.getStringCellValue() != null) {
+                                    diretor = cell.getStringCellValue();
+                                    diretor = diretor.substring(0, Math.min(diretor.length(), 255));
+                                } else {
+                                    diretor = (diretor == null) ? "" : diretor.replaceAll("'", "");
+                                }
 
-                            }else{
+                                insercao.setString(2, diretor);
 
-                                diretor = "";
-                            }
-
-
-                        } else if (j == 4) {
-
-                            atores = cell.getStringCellValue();
-
-                            if(cell != null && cell.getStringCellValue() != null){
-
+                            } else if (j == 4) {
                                 atores = cell.getStringCellValue();
+                                if (cell != null && cell.getStringCellValue() != null) {
+                                    atores = cell.getStringCellValue();
+                                    atores = atores.substring(0, Math.min(atores.length(), 255));
+                                } else {
+                                    atores = (atores == null) ? "" : atores.replaceAll("'", "");
+                                }
 
-                            }else{
+                                insercao.setString(3, atores);
 
-                                atores = "";
-                            }
+                            } else if (j == 7) {
 
-                        } else if (j == 6) {
+                                if (cell != null && cell.getLocalDateTimeCellValue() != null) {
+                                    dtLancamento = cell.getLocalDateTimeCellValue().toLocalDate();
+                                } else {
+                                    dtLancamento = LocalDate.of(1000, 2, 10);
+                                }
 
-                            if(cell != null && cell.getLocalDateTimeCellValue() != null){
+                                insercao.setDate(4, Date.valueOf(dtLancamento));
 
-                                dtLancamento = cell.getLocalDateTimeCellValue().toLocalDate();
+                            } else if (j == 8) {
+                                if (cell != null) {
 
-                            }else{
+                                    notaConteudo = cell.getNumericCellValue();
+                                    Integer contDigitos = (int) cell.getNumericCellValue();
 
-                                dtLancamento = LocalDate.of(1000,2,10);
-                            }
+                                    String notaTexto = contDigitos.toString();
 
+                                    Double div = Math.pow(10, notaTexto.length() - 1);
 
-                        } else if (j == 8) {
+                                    notaConteudo = contDigitos / div;
 
-                            if(cell != null){
+                                    notaResp = notaConteudo.toString();
 
-                                notaConteudo = cell.getNumericCellValue();
-                                Integer contDigitos = (int) cell.getNumericCellValue();
+                                } else {
+                                    notaConteudo = 0.0;
+                                    notaResp = "0";
+                                }
 
-                                String notaTexto =  contDigitos.toString();
+                                insercao.setString(6, notaResp);
 
-                                Double div = Math.pow(10, notaTexto.length() - 1);
-
-                                notaConteudo = contDigitos / div;
-
-                                notaResp = notaConteudo.toString();
-
-
-                            }else{
-
-                                notaConteudo = 0.0;
-                                notaResp = "0";
-                            }
-
-
-                        }else if(j == 10){
-
-                            generos = cell.getStringCellValue();
-
-                            if(cell != null && cell.getStringCellValue() != null){
-
+                            } else if (j == 10) {
                                 generos = cell.getStringCellValue();
+                                if (cell != null && cell.getStringCellValue() != null) {
+                                    generos = cell.getStringCellValue();
+                                } else {
+                                    generos = "";
+                                }
 
+                                insercao.setString(5, generos);
 
-                            }else{
-
-                                generos = "";
-                            }
-
-
-                        }else if(j == 12){
-
-                            sinopse = cell.getStringCellValue();
-
-                            if(cell != null && cell.getStringCellValue() != null){
-
+                            } else if (j == 11) {
                                 sinopse = cell.getStringCellValue();
+                                if (cell != null && cell.getStringCellValue() != null) {
+                                    sinopse = cell.getStringCellValue();
+                                    sinopse = sinopse.substring(0, Math.min(sinopse.length(), 255));
+                                } else {
+                                    sinopse = "";
+                                    sinopse = (sinopse == null) ? "" : sinopse.replaceAll("'", "");
+                                }
 
+                                insercao.setString(7, sinopse);
 
-                            }else{
+                            } else if (j == 13) {
 
-                                sinopse = "";
+                                if (cell != null) {
+                                    numVotos = (int) cell.getNumericCellValue();
+                                } else {
+                                    numVotos = 0;
+                                }
+
+                                insercao.setInt(8, numVotos);
+
                             }
-
-                        }else if(j == 13){
-
-
-                            if(cell != null){
-
-                                numVotos = (int) cell.getNumericCellValue();
-
-                            }else{
-
-                                numVotos = 0;
-                            }
-
-
                         }
-                    }
 
-                    sinopse = (sinopse == null) ? "" : sinopse.replaceAll("'", "");
-                    atores = (atores == null) ? "" : atores.replaceAll("'", "");
-                    titulo = (titulo == null) ? "" : titulo.replaceAll("'", "");
-                    diretor = (diretor == null) ? "" : diretor.replaceAll("'", "");
+                        insercao.addBatch();
 
-                    atores = atores.substring(0, Math.min(atores.length(), 255));
-                    diretor = diretor.substring(0, Math.min(diretor.length(), 255));
-                    sinopse = sinopse.substring(0, Math.min(sinopse.length(), 255));
+                            if(i == 2000) {
+                                insercao.executeBatch();
+                                conexao.commit();
+                                System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                                log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                            }
 
-                    String comando = """
-                        INSERT INTO Conteudo 
-                        VALUES (DEFAULT, 'Tv Show', '%s', '%s', '%s', '%s', '%s', %s, '%s', %d);
-                    """.formatted(titulo, diretor, atores, dtLancamento.toString(), generos, notaResp, sinopse, numVotos);
+                            if(i > 2000 && i == 4000) {
+                                contador += 2000;
+                                insercao.executeBatch();
+                                conexao.commit();
+                                System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                                log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                            }
 
-                    jdbcTemplate.execute(comando);
-                    System.out.println(getDataHora() + " ✅ Inserido com sucesso: " + titulo);
-                    log.registrar("INFO", " ✅ Inserido com sucesso: " + titulo);
+                            if(i > 4000 && i == 6000) {
+                                contador += 2000;
+                                insercao.executeBatch();
+                                conexao.commit();
+                                System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                                log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                            }
+
+                            if(i > 6000 && i == 8000) {
+                                contador += 2000;
+                                insercao.executeBatch();
+                                conexao.commit();
+                                System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                                log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                            }
+
+                            if(i > 8000 && i == 10000) {
+                                contador += 2000;
+                                insercao.executeBatch();
+                                conexao.commit();
+                                System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                                log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                            }
+
+                            if(i > 10000 && i == 12000) {
+                                contador += 2000;
+                                insercao.executeBatch();
+                                conexao.commit();
+                                System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                                log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                            }
+
+                            if(i > 12000 && i == 14000) {
+                                contador += 2000;
+                                insercao.executeBatch();
+                                conexao.commit();
+                                System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                                log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                            }
+
+                            if(i > 14000 && i == 16000) {
+                                contador += 2000;
+                                insercao.executeBatch();
+                                conexao.commit();
+                                System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                                log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                            }
 
                 } catch (Exception eLinha) {
                     String mensagem = " ❌ Erro ao processar linha " + i + ": " + eLinha.getMessage();
                     System.out.println(getDataHora() + mensagem);
                     log.registrar("ERRO", mensagem);
-                }
+                    eLinha.printStackTrace();
             }
+        }
+
+            insercao.executeBatch();
+            conexao.commit();
 
             workbook.close();
             System.out.println(getDataHora() + " 🏁 Extração de séries finalizada com sucesso.");
@@ -228,6 +269,5 @@ public class Serie {
             System.out.println(getDataHora() + mensagem);
             log.registrar("ERRO", mensagem);
         }
-//        log.ExecutarLog();
     }
 }
