@@ -32,7 +32,6 @@ public class Serie extends Conteudo {
             bs.setUrl(System.getenv("DB_URL"));
             bs.setUsername(System.getenv("DB_USERNAME"));
             bs.setPassword(System.getenv("DB_PASSWORD"));
-//            log.registrar("INFO", "🔗Conexão com o banco de dados estabelecida.");
             jdbcTemplate = new JdbcTemplate(bs);
     }
 
@@ -106,7 +105,6 @@ public class Serie extends Conteudo {
                                     atores = cell.getStringCellValue();
                                     atores = atores.substring(0, Math.min(atores.length(), 255));
                                 } else {
-//                                atores = "";
                                     atores = (atores == null) ? "" : atores.replaceAll("'", "");
                                 }
 
@@ -172,7 +170,9 @@ public class Serie extends Conteudo {
                                 } else {
                                     numVotos = 0;
                                 }
+
                                 insercao.setInt(8, numVotos);
+
                             }
                         }
 
@@ -241,13 +241,13 @@ public class Serie extends Conteudo {
                                 log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
                             }
 
-                    } catch (Exception eLinha) {
-                        String mensagem = " ❌ Erro ao processar linha " + i + ": " + eLinha.getMessage();
-                        System.out.println(getDataHora() + mensagem);
-                        log.registrar("ERRO", mensagem);
-                        eLinha.printStackTrace();
-                }
+                } catch (Exception eLinha) {
+                    String mensagem = " ❌ Erro ao processar linha " + i + ": " + eLinha.getMessage();
+                    System.out.println(getDataHora() + mensagem);
+                    log.registrar("ERRO", mensagem);
+                    eLinha.printStackTrace();
             }
+        }
 
             insercao.executeBatch();
             conexao.commit();

@@ -45,7 +45,6 @@ public class Log {
 
     public void registrar(String tipoLog, String mensagem) {
 
-
         String msgLog = getDataHora() + " - " + tipoLog + ": " + mensagem;
         Integer qtdErro = 0;
 
@@ -55,8 +54,6 @@ public class Log {
         }
 
         setTipoLog(tipoLog);
-//        System.out.println(msgLog);
-
 
         try {
 
@@ -72,7 +69,7 @@ public class Log {
 
         } catch(Exception e) {
             e.printStackTrace();
-            throw new IllegalStateException("Erro ao gerar Log."+ e);
+            throw new IllegalStateException("Erro ao gerar Log. " + e);
         }
 
     }

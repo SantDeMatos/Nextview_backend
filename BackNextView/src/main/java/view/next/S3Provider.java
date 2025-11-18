@@ -12,7 +12,6 @@ public class S3Provider {
 
     public S3Provider() {
         this.credentials = DefaultCredentialsProvider.create();
-
     }
 
     public S3Client getS3Client() {

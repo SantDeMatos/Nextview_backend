@@ -73,8 +73,7 @@ public class Filme extends Conteudo {
                 Integer numVotos = 0;
 
                 try {
-
-                    for (int j = 0; j < 16; j++) {
+                    for (int j = 0; j < 16; j++) { // Laço para percorrer as colunas
 
                         Cell cell = row.getCell(j);
 
@@ -88,7 +87,7 @@ public class Filme extends Conteudo {
                                 titulo = (titulo == null) ? "" : titulo.replaceAll("'", "");
                             }
 
-                            insercao.setString(1, titulo);
+                            insercao.setString(1, titulo); // Adiciona a célula (dado) da planilha ao bloco
 
                         } else if (j == 3) {
                             diretor = cell.getStringCellValue();
@@ -178,7 +177,7 @@ public class Filme extends Conteudo {
                     }
 
                     if(i == 2000) {
-                        insercao.executeBatch();
+                        insercao.executeBatch(); // Envia o lote de dados ao banco de dados
                         conexao.commit();
                         System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
                         log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
