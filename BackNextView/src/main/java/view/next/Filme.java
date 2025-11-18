@@ -40,7 +40,7 @@ public class Filme extends Conteudo {
         System.out.println(getDataHora() + "📄Iniciando extração de filmes...");
         log.registrar("INFO", "📄Iniciando extração de filmes...");
 
-        String sql = " INSERT INTO conteudo VALUES (DEFAULT, 'Movie', ?, ?, ?, ?, ?, ?, ?, ?); ";
+        String sql = " INSERT INTO Conteudo VALUES (DEFAULT, 'Movie', ?, ?, ?, ?, ?, ?, ?, ?); ";
 
         try(Connection conexao = basicDataSource.getConnection();
             PreparedStatement insercao = conexao.prepareStatement(sql)) {

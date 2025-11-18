@@ -41,7 +41,7 @@ public class Serie extends Conteudo {
         System.out.println(getDataHora() + "📄Iniciando extração de séries...");
         log.registrar("INFO", "📄Iniciando extração de séries...");
 
-        String sql = " INSERT INTO conteudo VALUES (DEFAULT, 'Tv Show', ?, ?, ?, ?, ?, ?, ?, ?); ";
+        String sql = " INSERT INTO Conteudo VALUES (DEFAULT, 'Tv Show', ?, ?, ?, ?, ?, ?, ?, ?); ";
 
         try(Connection conexao = bs.getConnection();
             PreparedStatement insercao = conexao.prepareStatement(sql)) {
