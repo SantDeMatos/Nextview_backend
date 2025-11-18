@@ -55,7 +55,7 @@ public class Serie extends Conteudo {
             int numlinhas = sheet.getPhysicalNumberOfRows();
             System.out.println(getDataHora() + "📄Planilha carregada com " + numlinhas + " linhas.");
             log.registrar("INFO", "📄Planilha carregada com " + numlinhas + " linhas.");
-//            Integer contador = 0;
+            Integer contador = 1;
 
             for (int i = 1; i <= numlinhas; i++) {
 
@@ -178,12 +178,68 @@ public class Serie extends Conteudo {
 
                         insercao.addBatch();
 
-                        if (i % 2000 == 0) {
-                            insercao.executeBatch();
-                            conexao.commit();
-                            System.out.println(getDataHora() + " ✅ Inserido com sucesso!");
-                            log.registrar("INFO", " ✅ Inserido com sucesso!");
-                        }
+                            if(i == 2000) {
+                                insercao.executeBatch();
+                                conexao.commit();
+                                System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                                log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                            }
+
+                            if(i > 2000 && i == 4000) {
+                                contador += 2000;
+                                insercao.executeBatch();
+                                conexao.commit();
+                                System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                                log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                            }
+
+                            if(i > 4000 && i == 6000) {
+                                contador += 2000;
+                                insercao.executeBatch();
+                                conexao.commit();
+                                System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                                log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                            }
+
+                            if(i > 6000 && i == 8000) {
+                                contador += 2000;
+                                insercao.executeBatch();
+                                conexao.commit();
+                                System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                                log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                            }
+
+                            if(i > 8000 && i == 10000) {
+                                contador += 2000;
+                                insercao.executeBatch();
+                                conexao.commit();
+                                System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                                log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                            }
+
+                            if(i > 10000 && i == 12000) {
+                                contador += 2000;
+                                insercao.executeBatch();
+                                conexao.commit();
+                                System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                                log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                            }
+
+                            if(i > 12000 && i == 14000) {
+                                contador += 2000;
+                                insercao.executeBatch();
+                                conexao.commit();
+                                System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                                log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                            }
+
+                            if(i > 14000 && i == 16000) {
+                                contador += 2000;
+                                insercao.executeBatch();
+                                conexao.commit();
+                                System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                                log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                            }
 
                     } catch (Exception eLinha) {
                         String mensagem = " ❌ Erro ao processar linha " + i + ": " + eLinha.getMessage();
