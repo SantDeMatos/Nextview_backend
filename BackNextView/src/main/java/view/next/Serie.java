@@ -66,7 +66,7 @@ public class Serie extends Conteudo {
                     String titulo = "";
                     String diretor = "";
                     String atores = "";
-                    LocalDate dtLancamento = null;
+                    Integer dtLancamento = null;
                     String generos = "";
                     String notaResp = "";
                     Double notaConteudo = 0.0;
@@ -112,13 +112,24 @@ public class Serie extends Conteudo {
 
                             } else if (j == 7) {
 
-                                if (cell != null && cell.getLocalDateTimeCellValue() != null) {
-                                    dtLancamento = cell.getLocalDateTimeCellValue().toLocalDate();
-                                } else {
-                                    dtLancamento = LocalDate.of(1000, 2, 10);
-                                }
+                                if(cell != null) {
 
-                                insercao.setDate(4, Date.valueOf(dtLancamento));
+                                    dtLancamento = (int) cell.getNumericCellValue();
+
+                                    if(dtLancamento.toString().length() > 4){
+
+                                        dtLancamento = 0000;
+
+                                    }
+
+                                }else{
+
+                                    dtLancamento = 0000;
+                                }
+                                String dataNova = dtLancamento+"-01-01";
+
+
+                                insercao.setDate(4, Date.valueOf(dataNova));
 
                             } else if (j == 8) {
                                 if (cell != null) {
