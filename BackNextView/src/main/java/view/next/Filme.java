@@ -37,8 +37,8 @@ public class Filme extends Conteudo {
 
     public void ExtrairFilmes() {
 
-        System.out.println(getDataHora() + "📄Iniciando extração de filmes...");
-        log.registrar("INFO", "📄Iniciando extração de filmes...");
+        System.out.println(getDataHora() + " 📄Iniciando extração de filmes...");
+        log.registrar("INFO", " 📄Iniciando extração de filmes...");
 
         String sql = " INSERT INTO Conteudo VALUES (DEFAULT, 'Movie', ?, ?, ?, ?, ?, ?, ?, ?); ";
 
@@ -51,8 +51,9 @@ public class Filme extends Conteudo {
             Integer numlinhas = sheet.getPhysicalNumberOfRows();
             conexao.setAutoCommit(false);
 
-            System.out.println(getDataHora() + "📄 Planilha carregada com " + numlinhas + " linhas.");
-            log.registrar("INFO", "📄 Planilha carregada com " + numlinhas + " linhas.");
+            System.out.println(getDataHora() + " 📄 Planilha carregada com " + numlinhas + " linhas.");
+            log.registrar("INFO", " 📄 Planilha carregada com " + numlinhas + " linhas.");
+            Integer contador = 1;
 
             for (int i = 1; i <= numlinhas; i++) {
 
@@ -72,8 +73,7 @@ public class Filme extends Conteudo {
                 Integer numVotos = 0;
 
                 try {
-
-                    for (int j = 0; j < 16; j++) {
+                    for (int j = 0; j < 16; j++) { // Laço para percorrer as colunas
 
                         Cell cell = row.getCell(j);
 
@@ -87,7 +87,7 @@ public class Filme extends Conteudo {
                                 titulo = (titulo == null) ? "" : titulo.replaceAll("'", "");
                             }
 
-                            insercao.setString(1, titulo);
+                            insercao.setString(1, titulo); // Adiciona a célula (dado) da planilha ao bloco
 
                         } else if (j == 3) {
                             diretor = cell.getStringCellValue();
@@ -95,8 +95,7 @@ public class Filme extends Conteudo {
                                 diretor = cell.getStringCellValue();
                                 diretor = diretor.substring(0, Math.min(diretor.length(), 255));
                             } else {
-//                                diretor = "";
-                            diretor = (diretor == null) ? "" : diretor.replaceAll("'", "");
+                                diretor = (diretor == null) ? "" : diretor.replaceAll("'", "");
                             }
 
                             insercao.setString(2, diretor);
@@ -111,7 +110,6 @@ public class Filme extends Conteudo {
                                 atores = atores.substring(0, Math.min(atores.length(), 255));
 
                             } else {
-//                                atores = "";
                                 atores = (atores == null) ? "" : atores.replaceAll("'", "");
                             }
 
@@ -188,11 +186,67 @@ public class Filme extends Conteudo {
                         }
                     }
 
-                    if(i % 2000 == 0) {
+                    if(i == 2000) {
+                        insercao.executeBatch(); // Envia o lote de dados ao banco de dados
+                        conexao.commit();
+                        System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                        log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                    }
+
+                    if(i > 2000 && i == 4000) {
+                        contador += 2000;
                         insercao.executeBatch();
                         conexao.commit();
-                        System.out.println(getDataHora() + " ✅ Inserido com sucesso!");
-                        log.registrar("INFO", " ✅ Inserido com sucesso!");
+                        System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                        log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                    }
+
+                    if(i > 4000 && i == 6000) {
+                        contador += 2000;
+                        insercao.executeBatch();
+                        conexao.commit();
+                        System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                        log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                    }
+
+                    if(i > 6000 && i == 8000) {
+                        contador += 2000;
+                        insercao.executeBatch();
+                        conexao.commit();
+                        System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                        log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                    }
+
+                    if(i > 8000 && i == 10000) {
+                        contador += 2000;
+                        insercao.executeBatch();
+                        conexao.commit();
+                        System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                        log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                    }
+
+                    if(i > 10000 && i == 12000) {
+                        contador += 2000;
+                        insercao.executeBatch();
+                        conexao.commit();
+                        System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                        log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                    }
+
+                    if(i > 12000 && i == 14000) {
+                        contador += 2000;
+                        insercao.executeBatch();
+                        conexao.commit();
+                        System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                        log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                    }
+
+                    if(i > 14000 && i == 16000) {
+                        contador += 2000;
+                        insercao.executeBatch();
+                        conexao.commit();
+                        System.out.println(getDataHora() + " Linhas " + contador + " a " + i + " extraídas com sucesso.");
+                        log.registrar("INFO", " Linhas " + contador + " a " + i + " extraídas com sucesso.");
                     }
 
                 } catch (Exception eLinha) {

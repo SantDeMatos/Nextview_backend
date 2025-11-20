@@ -1,6 +1,5 @@
 package view.next;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,8 +18,6 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.S3Object;
 
-
-
 public class Main {
 
     public static void main(String[] args) throws IOException, InvalidFormatException {
@@ -33,7 +30,6 @@ public class Main {
                     | |\\  | |  __/  >  <  | |_     \\  /    | | |  __/  \\ V  V /\s
                     |_| \\_|  \\___| /_/\\_\\  \\__|     \\/     |_|  \\___|   \\_/\\_/ \s
                     """);
-
 
         S3Client s3Client = new S3Provider().getS3Client();
 
@@ -50,7 +46,8 @@ public class Main {
 
             InputStream objectContent = s3Client.getObject(getObjectRequest, ResponseTransformer.toInputStream());
 
-                Files.copy(objectContent, new File(object.key()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(objectContent, new File(object.key()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+
         }
 
         Serie series = new Serie();
