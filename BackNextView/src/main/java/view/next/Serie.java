@@ -174,7 +174,7 @@ public class Serie extends Conteudo {
 
                                 insercao.setString(7, sinopse);
 
-                            } else if (j == 13) {
+                            } else if (j == 14) {
 
                                 if (cell != null) {
                                     numVotos = (int) cell.getNumericCellValue();
