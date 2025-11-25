@@ -61,12 +61,12 @@ public class Main {
         filmes.ExtrairFilmes();
 
         // Filmes
-        String webhookUrlFilme = "https://hooks.slack.com/services/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";
+        String webhookUrlFilme = "https://hooks.slack.com/services/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";
         String messageFilme = String.valueOf(Filme.log.getMensagemLog());
         enviarNotificaçãoFilme(webhookUrlFilme, messageFilme);
 
         //Series
-        String webhookUrlSerie = "https://hooks.slack.com/services/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";
+        String webhookUrlSerie = "https://hooks.slack.com/services/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";
         String messageSerie = String.valueOf(Serie.log);
         enviarNotificaçãoSerie(webhookUrlSerie, messageSerie);
 

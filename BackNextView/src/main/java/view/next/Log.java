@@ -48,6 +48,10 @@ public class Log {
         String msgLog = getDataHora() + " - " + tipoLog + ": " + mensagem;
         Integer qtdErro = 0;
 
+        // Mande essa mensagem para o slack - o msgLog - criando somente um canal
+
+        System.out.println(msgLog);
+
         if(Objects.equals(tipoLog, "ERRO")) {
             qtdErro++;
             setQtdErro(qtdErro);
