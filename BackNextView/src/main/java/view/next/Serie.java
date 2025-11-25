@@ -29,9 +29,9 @@ public class Serie extends Conteudo {
 
     static {
             bs.setDriverClassName("com.mysql.cj.jdbc.Driver");
-            bs.setUrl(System.getenv("DB_URL"));
-            bs.setUsername(System.getenv("DB_USERNAME"));
-            bs.setPassword(System.getenv("DB_PASSWORD"));
+            bs.setUrl(System.getenv("jdbc:mysql://container-banco:3306/nextview"));
+            bs.setUsername(System.getenv("nextview"));
+            bs.setPassword(System.getenv("Sptech#2024"));
             jdbcTemplate = new JdbcTemplate(bs);
     }
 

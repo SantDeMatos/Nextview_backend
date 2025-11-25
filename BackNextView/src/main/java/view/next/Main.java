@@ -3,6 +3,10 @@ package view.next;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -56,5 +60,63 @@ public class Main {
         Filme filmes = new Filme();
         filmes.ExtrairFilmes();
 
+        // Filmes
+        String webhookUrlFilme = "https://hooks.slack.com/services/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";
+        String messageFilme = String.valueOf(Filme.log.getMensagemLog());
+        enviarNotificaçãoFilme(webhookUrlFilme, messageFilme);
+
+        //Series
+        String webhookUrlSerie = "https://hooks.slack.com/services/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";
+        String messageSerie = String.valueOf(Serie.log);
+        enviarNotificaçãoSerie(webhookUrlSerie, messageSerie);
+
+    }
+
+    // envia para Filmes
+    public static void enviarNotificaçãoFilme(String webhookUrlFilme, String messageFilme) {
+        try {
+            URL url = new URL(webhookUrlFilme);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type", "application/json");
+
+            String payload = String.format("{\"text\": \"%s\"}", messageFilme);
+
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = payload.getBytes(StandardCharsets.UTF_8);
+                os.write(input);
+            }
+
+            int responseCode = connection.getResponseCode();
+            System.out.println("Slack falou: " + responseCode);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // envia a para Series
+    public static void enviarNotificaçãoSerie(String webhookUrlSerie, String messageSerie) {
+        try {
+            URL url = new URL(webhookUrlSerie);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type", "application/json");
+
+            String payload = String.format("{\"text\": \"%s\"}", messageSerie);
+
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = payload.getBytes(StandardCharsets.UTF_8);
+                os.write(input);
+            }
+
+            int responseCode = connection.getResponseCode();
+            System.out.println("Slack falou: " + responseCode);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

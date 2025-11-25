@@ -29,9 +29,9 @@ public class Filme extends Conteudo {
 
     static {
         basicDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        basicDataSource.setUrl(System.getenv("DB_URL"));
-        basicDataSource.setUsername(System.getenv("DB_USERNAME"));
-        basicDataSource.setPassword(System.getenv("DB_PASSWORD"));
+        basicDataSource.setUrl(System.getenv("jdbc:mysql://container-banco:3306/nextview"));
+        basicDataSource.setUsername(System.getenv("nextview"));
+        basicDataSource.setPassword(System.getenv("Sptech#2024"));
         jdbcTemplate = new JdbcTemplate(basicDataSource);
     }
 
