@@ -24,15 +24,15 @@ public class Serie extends Conteudo {
 
     public static Log log = new Log();
 
-    private static final BasicDataSource bs = new BasicDataSource();
+    private static final BasicDataSource basicDataSource = new BasicDataSource();
     private static JdbcTemplate jdbcTemplate;
 
     static {
-            bs.setDriverClassName("com.mysql.cj.jdbc.Driver");
-            bs.setUrl(System.getenv("jdbc:mysql://container-banco:3306/nextview"));
-            bs.setUsername(System.getenv("nextview"));
-            bs.setPassword(System.getenv("Sptech#2024"));
-            jdbcTemplate = new JdbcTemplate(bs);
+            basicDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+            basicDataSource.setUrl(System.getenv("DB_URL"));
+            basicDataSource.setUsername(System.getenv("DB_USERNAME"));
+            basicDataSource.setPassword(System.getenv("DB_PASSWORD"));
+            jdbcTemplate = new JdbcTemplate(basicDataSource);
     }
 
     public void ExtrairSeries() {
@@ -42,7 +42,7 @@ public class Serie extends Conteudo {
 
         String sql = " INSERT INTO Conteudo VALUES (DEFAULT, 'Tv Show', ?, ?, ?, ?, ?, ?, ?, ?); ";
 
-        try(Connection conexao = bs.getConnection();
+        try(Connection conexao = basicDataSource.getConnection();
             PreparedStatement insercao = conexao.prepareStatement(sql)) {
 
             conexao.setAutoCommit(false); // Desativando o commit automático dos dados
