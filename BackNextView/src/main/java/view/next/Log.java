@@ -3,6 +3,11 @@ package view.next;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import software.amazon.awssdk.services.s3.model.CSVOutput;
+
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -49,6 +54,33 @@ public class Log {
         Integer qtdErro = 0;
 
         // Mande essa mensagem para o slack - o msgLog - criando somente um canal
+
+        // Filmes
+        String webhookUrlFilme = System.getenv("SLACK_WEBHOOK_URL");
+        String messageFilme = msgLog;
+
+        // envia para Filmes
+
+            try {
+                URL url = new URL(webhookUrlFilme);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type", "application/json");
+
+                String payload = String.format("{\"text\": \"%s\"}", messageFilme);
+
+                try (OutputStream os = connection.getOutputStream()) {
+                    byte[] input = payload.getBytes(StandardCharsets.UTF_8);
+                    os.write(input);
+                }
+
+                int responseCode = connection.getResponseCode();
+                System.out.println("Slack falou: " + responseCode);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         System.out.println(msgLog);
 
