@@ -8,13 +8,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import com.mysql.cj.jdbc.Driver;
+
 import static java.sql.Date.valueOf;
 
 public class Serie extends Conteudo {
+
+    public Serie(TipoConteudo tipoConteudo) {
+        super(tipoConteudo);
+    }
 
     @Override
     public String getDataHora() {
@@ -40,7 +43,7 @@ public class Serie extends Conteudo {
         System.out.println(getDataHora() + "📄Iniciando extração de séries...");
         log.registrar("INFO", "📄Iniciando extração de séries...");
 
-        String sql = " INSERT INTO Conteudo VALUES (DEFAULT, 'Tv Show', ?, ?, ?, ?, ?, ?, ?, ?); ";
+        String sql = "INSERT INTO Conteudo VALUES (DEFAULT, '" + super.getTipoConteudo() + "', ?, ?, ?, ?, ?, ?, ?, ?);";
 
         try(Connection conexao = bs.getConnection();
             PreparedStatement insercao = conexao.prepareStatement(sql)) {

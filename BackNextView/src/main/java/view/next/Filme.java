@@ -17,6 +17,10 @@ import com.mysql.cj.jdbc.Driver;
 
 public class Filme extends Conteudo {
 
+    public Filme(TipoConteudo tipoConteudo) {
+        super(tipoConteudo);
+    }
+
     @Override
     public String getDataHora() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
@@ -40,7 +44,7 @@ public class Filme extends Conteudo {
         System.out.println(getDataHora() + " 📄Iniciando extração de filmes...");
         log.registrar("INFO", " 📄Iniciando extração de filmes...");
 
-        String sql = " INSERT INTO Conteudo VALUES (DEFAULT, 'Movie', ?, ?, ?, ?, ?, ?, ?, ?); ";
+        String sql = "INSERT INTO Conteudo VALUES (DEFAULT, '" + super.getTipoConteudo() + "', ?, ?, ?, ?, ?, ?, ?, ?); ";
 
         try(Connection conexao = basicDataSource.getConnection();
             PreparedStatement insercao = conexao.prepareStatement(sql)) {
