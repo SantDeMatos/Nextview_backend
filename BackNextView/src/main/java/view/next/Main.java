@@ -39,12 +39,14 @@ public class Main {
 
         ListObjectsRequest listObjects = ListObjectsRequest.builder()
                 .bucket("s3-bucket-excel-nextview")
+//                .bucket("s3-nextview-bucket")
                 .build();
         List<S3Object> objects = s3Client.listObjects(listObjects).contents();
 
         for (S3Object object : objects) {
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket("s3-bucket-excel-nextview")
+//                    .bucket("s3-nextview-bucket")
                     .key(object.key())
                     .build();
 
@@ -54,10 +56,10 @@ public class Main {
 
         }
 
-        Serie series = new Serie();
+        Serie series = new Serie(TipoConteudo.TV_SHOW);
         series.ExtrairSeries();
 
-        Filme filmes = new Filme();
+        Filme filmes = new Filme(TipoConteudo.MOVIE);
         filmes.ExtrairFilmes();
 
 
