@@ -36,6 +36,9 @@ public class Serie extends Conteudo {
             basicDataSource.setUsername(System.getenv("DB_USERNAME"));
             basicDataSource.setPassword(System.getenv("DB_PASSWORD"));
             jdbcTemplate = new JdbcTemplate(basicDataSource);
+
+        jdbcTemplate.execute("SET FOREIGN_KEY_CHECKS = 0;");
+        jdbcTemplate.execute("truncate Conteudo;");
     }
 
 

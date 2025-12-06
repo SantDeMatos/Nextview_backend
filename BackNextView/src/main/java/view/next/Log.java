@@ -75,6 +75,7 @@ public class Log {
                     os.write(input);
                 }
 
+                int responseCode = connection.getResponseCode();
 
             } catch (Exception e) {
                 e.printStackTrace();
