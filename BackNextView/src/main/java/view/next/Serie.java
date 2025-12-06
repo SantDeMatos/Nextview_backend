@@ -38,6 +38,7 @@ public class Serie extends Conteudo {
             jdbcTemplate = new JdbcTemplate(basicDataSource);
     }
 
+
     public void ExtrairSeries() {
 
         System.out.println(getDataHora() + "📄Iniciando extração de séries...");

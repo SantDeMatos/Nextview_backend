@@ -75,14 +75,11 @@ public class Log {
                     os.write(input);
                 }
 
-                int responseCode = connection.getResponseCode();
-                System.out.println("Slack falou: " + responseCode);
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-        System.out.println(msgLog);
 
         if(Objects.equals(tipoLog, "ERRO")) {
             qtdErro++;
